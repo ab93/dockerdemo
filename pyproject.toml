@@ -1,0 +1,24 @@
+[tool.poetry]
+name = "dockerdemo"
+version = "0.1.0"
+description = ""
+authors = ["Avik Basu <ab93@users.noreply.github.com>"]
+readme = "README.md"
+build = "build.py"
+
+[tool.poetry.dependencies]
+python = "~3.12"
+fastapi = "^0.110"
+uvicorn = "^0.29"
+python-multipart = "^0.0.9"
+torch = "^2.2.1"
+torchvision = "^0.17.1"
+
+[tool.poetry.group.dev.dependencies]
+black = "^24.3.0"
+pytest = "^8.1.1"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
