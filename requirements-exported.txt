@@ -35,3 +35,8 @@ torch==2.2.2 ; python_version >= "3.12" and python_version < "3.13"
 torchvision==0.17.2 ; python_version >= "3.12" and python_version < "3.13"
 typing-extensions==4.10.0 ; python_version >= "3.12" and python_version < "3.13"
 uvicorn==0.29.0 ; python_version >= "3.12" and python_version < "3.13"
+# some dep change
+# some dep change
+# some dep change
+# some dep change
+# some dep change

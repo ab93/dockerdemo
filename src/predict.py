@@ -52,6 +52,5 @@ def classify_image(image: Image):
     model = torch.load(os.path.join(ARTIFACT_DIR, "model.pth"))
     with torch.no_grad():
         out = model(x)
-        # prediction = torch.argmax(out, dim=1).item()
         prediction = argmax(out)
     return prediction

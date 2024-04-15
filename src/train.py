@@ -49,8 +49,8 @@ def fit(model):
             logger.info("Epoch %s: loss: %.5f", epoch, running_loss / n_batches)
 
     _path = os.path.join(ARTIFACT_DIR, "model.pth")
-    # with open(_path, "wb") as f:
-    #     torch.save(model.to("cpu"), f)
+    with open(_path, "wb") as f:
+        torch.save(model.to("cpu"), f)
     logger.info("Saved model to %s", _path)
 
 
