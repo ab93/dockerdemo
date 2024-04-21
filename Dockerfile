@@ -1,5 +1,5 @@
 # Base
-FROM python:3.12-bookworm as initial
+FROM python:3.12-bookworm as base
 
 ENV PIP_DEFAULT_TIMEOUT=100 \
     PIP_DISABLE_PIP_VERSION_CHECK=1
@@ -23,7 +23,7 @@ CMD ["uvicorn", "src.server:app", "--host", "0.0.0.0", "--port", "80"]
 
 
 # Better order
-FROM python:3.12-bookworm as better_order
+FROM python:3.12-bookworm as opt1
 
 ENV PIP_DEFAULT_TIMEOUT=100 \
     PIP_DISABLE_PIP_VERSION_CHECK=1
@@ -48,7 +48,7 @@ CMD ["uvicorn", "src.server:app", "--host", "0.0.0.0", "--port", "80"]
 
 # 1. Pin Transitive Dependencies
 # 2. Disable pip cache
-FROM python:3.12-bookworm as poetryexport
+FROM python:3.12-bookworm as opt2
 
 # disable pip cache
 ENV PIP_DEFAULT_TIMEOUT=100 \
@@ -72,7 +72,7 @@ CMD ["uvicorn", "src.server:app", "--host", "0.0.0.0", "--port", "80"]
 
 
 # Use slim base image
-FROM python:3.12-slim-bookworm as slimmed_err
+FROM python:3.12-slim-bookworm as opt3_err
 
 # disable pip cache
 ENV PIP_DEFAULT_TIMEOUT=100 \
@@ -99,7 +99,7 @@ CMD ["uvicorn", "src.server:app", "--host", "0.0.0.0", "--port", "80"]
 # 1. Use slim base image
 # 2. Install C++ compiler
 # 3. Remove compiler after build
-FROM python:3.12-slim-bookworm as slimmed
+FROM python:3.12-slim-bookworm as opt3
 
 # disable pip cache
 ENV PIP_DEFAULT_TIMEOUT=100 \
@@ -126,7 +126,7 @@ CMD ["uvicorn", "src.server:app", "--host", "0.0.0.0", "--port", "80"]
 
 
 # Combine layers
-FROM python:3.12-slim-bookworm as single_layer
+FROM python:3.12-slim-bookworm as opt4
 
 # disable pip cache
 ENV PIP_DEFAULT_TIMEOUT=100 \
@@ -152,7 +152,7 @@ EXPOSE 80
 CMD ["uvicorn", "src.server:app", "--host", "0.0.0.0", "--port", "80"]
 
 
-FROM python:3.12-bookworm as builder
+FROM python:3.12-bookworm as opt5_builder
 
 ENV VIRTUAL_ENV=/opt/venv \
     PIP_DEFAULT_TIMEOUT=100 \
@@ -167,10 +167,10 @@ RUN pip install setuptools \
     && pip install -r requirements-exported.txt \
     && python setup.py install
 
-FROM python:3.12-slim-bookworm AS multistage_runner_1
+FROM python:3.12-slim-bookworm AS opt5
 
 ENV VIRTUAL_ENV=/opt/venv
-COPY --from=builder ${VIRTUAL_ENV} ${VIRTUAL_ENV}
+COPY --from=opt5_builder ${VIRTUAL_ENV} ${VIRTUAL_ENV}
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
 WORKDIR /app
@@ -181,7 +181,7 @@ EXPOSE 80
 CMD ["uvicorn", "src.server:app", "--host", "0.0.0.0", "--port", "80"]
 
 
-FROM python:3.12-bookworm as mntcache_builder
+FROM python:3.12-bookworm as opt6_builder
 
 ENV VIRTUAL_ENV=/opt/venv \
     PIP_DEFAULT_TIMEOUT=100 \
@@ -197,10 +197,10 @@ RUN --mount=type=cache,target=/root/.cache/pip pip install setuptools \
     && python setup.py install
 
 
-FROM python:3.12-slim-bookworm AS multistage_runner_2
+FROM python:3.12-slim-bookworm AS opt6
 
 ENV VIRTUAL_ENV=/opt/venv
-COPY --from=mntcache_builder ${VIRTUAL_ENV} ${VIRTUAL_ENV}
+COPY --from=opt6_builder ${VIRTUAL_ENV} ${VIRTUAL_ENV}
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
 WORKDIR /app
