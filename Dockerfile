@@ -1,4 +1,6 @@
+###########################################################
 # Base
+###########################################################
 FROM python:3.12-bookworm as base
 
 ENV PIP_DEFAULT_TIMEOUT=100 \
@@ -22,7 +24,9 @@ EXPOSE 80
 CMD ["uvicorn", "src.server:app", "--host", "0.0.0.0", "--port", "80"]
 
 
+###########################################################
 # Better order
+###########################################################
 FROM python:3.12-bookworm as opt1
 
 ENV PIP_DEFAULT_TIMEOUT=100 \
@@ -46,8 +50,10 @@ EXPOSE 80
 CMD ["uvicorn", "src.server:app", "--host", "0.0.0.0", "--port", "80"]
 
 
+###########################################################
 # 1. Pin Transitive Dependencies
 # 2. Disable pip cache
+###########################################################
 FROM python:3.12-bookworm as opt2
 
 # disable pip cache
@@ -71,7 +77,9 @@ EXPOSE 80
 CMD ["uvicorn", "src.server:app", "--host", "0.0.0.0", "--port", "80"]
 
 
-# Use slim base image
+###########################################################
+# Use slim base image -> throws error
+###########################################################
 FROM python:3.12-slim-bookworm as opt3_err
 
 # disable pip cache
@@ -96,9 +104,11 @@ EXPOSE 80
 CMD ["uvicorn", "src.server:app", "--host", "0.0.0.0", "--port", "80"]
 
 
+###########################################################
 # 1. Use slim base image
 # 2. Install C++ compiler
 # 3. Remove compiler after build
+###########################################################
 FROM python:3.12-slim-bookworm as opt3
 
 # disable pip cache
@@ -125,7 +135,9 @@ CMD ["uvicorn", "src.server:app", "--host", "0.0.0.0", "--port", "80"]
 
 
 
+###########################################################
 # Combine layers
+###########################################################
 FROM python:3.12-slim-bookworm as opt4
 
 # disable pip cache
@@ -152,7 +164,9 @@ EXPOSE 80
 CMD ["uvicorn", "src.server:app", "--host", "0.0.0.0", "--port", "80"]
 
 
+###########################################################
 FROM python:3.12-bookworm as opt5_builder
+###########################################################
 
 ENV VIRTUAL_ENV=/opt/venv \
     PIP_DEFAULT_TIMEOUT=100 \
@@ -166,6 +180,7 @@ COPY requirements-exported.txt extension ./
 RUN pip install setuptools \
     && pip install -r requirements-exported.txt \
     && python setup.py install
+
 
 FROM python:3.12-slim-bookworm AS opt5
 
@@ -181,7 +196,9 @@ EXPOSE 80
 CMD ["uvicorn", "src.server:app", "--host", "0.0.0.0", "--port", "80"]
 
 
+###########################################################
 FROM python:3.12-bookworm as opt6_builder
+###########################################################
 
 ENV VIRTUAL_ENV=/opt/venv \
     PIP_DEFAULT_TIMEOUT=100 \
